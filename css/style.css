@@ -1,0 +1,1372 @@
+/* :root позволяет создать переменные, чтобы легко менять цвета по всему сайту */
+:root {
+   --dark-bg: #121217;
+   --card-bg: rgba(40, 40, 45, 0.5);
+   --text-color: #F0F0F0;
+   --accent-gradient-start: #00FFA3; /* Начало градиента (наш зеленый) */
+   --accent-gradient-end: #00E0C7;   /* Конец градиента (бирюзовый) */
+   --accent-color: #00FFA3;           /* Основной акцентный цвет для текста и границ */
+   --accent-white: #FFFFFF;
+}
+
+/* Применяем базовые стили ко всей странице */
+body {
+   background-color: var(--dark-bg);
+   color: var(--text-color);
+   font-family: 'Inter', sans-serif; /* Современный шрифт без засечек [cite: 111] */
+   margin: 0;
+   line-height: 1.6;
+}
+
+/* Стиль для эффекта "стекломорфизма", который понадобится позже [cite: 110] */
+.glassmorphism {
+   background: var(--card-bg);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px); /* Для поддержки в Safari */
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 12px;
+}
+
+
+/* Контейнер для центрирования контента */
+.container {
+   width: 100%;
+   max-width: 1200px; /* Ограничиваем ширину для больших экранов */
+   margin: 0 auto;
+   padding: 0 20px;
+   box-sizing: border-box;
+}
+
+/* --- Стили для Шапки (Header) --- */
+.sticky-header {
+   position: fixed;
+   top: 0;
+   left: 0;
+   width: 100%;
+   z-index: 1000;
+   padding: 15px 0;
+   /* Эффект "стекла" */
+   background-color: rgba(18, 18, 23, 0.75);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+   border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Тонкий разделитель */
+}
+
+
+.sticky-header nav {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.logo {
+   font-weight: 700;
+   font-size: 1.2rem;
+}
+
+.menu a {
+   color: var(--text-color);
+   text-decoration: none;
+   margin: 0 15px;
+   transition: color 0.3s;
+}
+
+.menu a:hover {
+   color: var(--accent-blue);
+}
+
+.header-cta {
+   display: flex;
+   align-items: center;
+   gap: 20px;
+}
+
+.status {
+   font-size: 0.9rem;
+   opacity: 0.7;
+}
+
+/* --- Стили для кнопок --- */
+.cta-button, .cta-button-main, .cta-button-secondary {
+   padding: 10px 20px;
+   border-radius: 8px;
+   text-decoration: none;
+   font-weight: 700;
+   transition: all 0.3s;
+}
+
+.cta-button, .cta-button-main {
+   background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+   color: var(--dark-bg);
+   /* Добавляем позиционирование для эффекта блика */
+   position: relative;
+   overflow: hidden;
+}
+
+.cta-button:hover, .cta-button-main:hover {
+   background-color: #0056b3;
+   box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+}
+
+.cta-button-secondary {
+   background-color: transparent;
+   color: var(--accent-white);
+   border: 2px solid var(--accent-blue);
+}
+
+.cta-button-secondary:hover {
+   background-color: var(--accent-blue);
+   color: var(--accent-white);
+}
+
+
+/* --- Стили для Главного экрана (Hero Section) --- */
+#hero {
+   height: 100vh;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   position: relative; /* <-- Возвращаем это свойство */
+   overflow: hidden; 
+}
+
+#three-canvas-container {
+   position: absolute; /* <-- Возвращаем это свойство */
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   z-index: 1; /* Можно вернуть z-index на 1, т.к. фон больше не глобальный */
+}
+
+.hero-content {
+   position: relative;
+   z-index: 2; /* Контент должен быть над 3D-фоном */
+}
+
+.hero-content h1 {
+   font-size: 4.5rem; /* Очень крупный заголовок */
+   font-weight: 900;
+   margin: 0;
+   color: var(--accent-white);
+}
+
+.slogan {
+   font-size: 1.5rem;
+   margin: 10px 0 20px;
+   opacity: 0.9;
+}
+
+.quote {
+   font-size: 1.1rem;
+   margin-bottom: 40px;
+   opacity: 0.7;
+}
+
+.hero-buttons {
+   display: flex;
+   justify-content: center;
+   gap: 20px; /* Пространство между кнопками */
+}
+
+.social-links {
+   margin-top: 50px;
+}
+
+.social-links a {
+   color: var(--text-color);
+   text-decoration: none;
+   margin: 0 15px;
+   opacity: 0.7;
+   transition: all 0.3s;
+}
+
+.social-links a:hover {
+   opacity: 1;
+   color: var(--accent-blue);
+}
+
+
+/* --- 1. Улучшения стиля и типографики --- */
+
+/* Делаем заголовок более "статусным" */
+.hero-content h1 {
+   text-shadow: 0 0 15px rgba(0, 123, 255, 0.3), 0 0 30px rgba(0, 123, 255, 0.2);
+   transition: all 0.3s ease;
+}
+
+/* Добавляем легкий интерактив на главный заголовок */
+.hero-content h1:hover {
+   transform: scale(1.02);
+   text-shadow: 0 0 25px rgba(0, 123, 255, 0.5), 0 0 50px rgba(0, 123, 255, 0.3);
+}
+
+/* --- 2. Улучшенная интерактивность --- */
+
+/* Улучшаем ховер-эффекты для кнопок, делаем их "живыми" */
+.cta-button-main:hover, .cta-button-secondary:hover {
+   transform: translateY(-3px); /* Кнопка "приподнимается" */
+   box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* Улучшаем ховер для социальных ссылок */
+.social-links a:hover {
+   opacity: 1;
+   color: var(--accent-blue);
+   transform: translateY(-3px); /* Тоже приподнимаем */
+}
+
+/* --- 3. Визуальные эффекты и анимации --- */
+
+/* Анимация появления контента на главном экране */
+@keyframes fadeInUp {
+   from {
+       opacity: 0;
+       transform: translateY(30px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+/* Применяем анимацию к элементам с задержкой для красивого эффекта */
+.hero-content {
+   animation: fadeInUp 1s ease-out;
+}
+
+.hero-content .slogan {
+   animation: fadeInUp 1s ease-out 0.2s;
+   animation-fill-mode: backwards; /* Начинает анимацию с "невидимого" состояния */
+}
+
+.hero-content .quote {
+   animation: fadeInUp 1s ease-out 0.4s;
+   animation-fill-mode: backwards;
+}
+
+.hero-content .hero-buttons {
+   animation: fadeInUp 1s ease-out 0.6s;
+   animation-fill-mode: backwards;
+}
+
+.hero-content .social-links {
+   animation: fadeInUp 1s ease-out 0.8s;
+   animation-fill-mode: backwards;
+}
+
+/* Стили для индикатора прокрутки вниз */
+.scroll-down-indicator {
+   position: absolute;
+   bottom: 30px;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 10;
+   width: 24px;
+   height: 40px;
+   border: 2px solid rgba(255, 255, 255, 0.5);
+   border-radius: 50px;
+   cursor: pointer;
+   transition: border-color 0.3s;
+}
+
+.scroll-down-indicator:hover {
+   border-color: var(--accent-blue);
+}
+
+.scroll-down-indicator span {
+   position: absolute;
+   top: 8px;
+   left: 50%;
+   width: 2px;
+   height: 8px;
+   background: rgba(255, 255, 255, 0.5);
+   margin-left: -1px;
+   border-radius: 2px;
+   animation: scroll-anim 2s infinite;
+}
+
+/* Анимация движения "колесика" мыши */
+@keyframes scroll-anim {
+   0% {
+       opacity: 1;
+       transform: translateY(0);
+   }
+   100% {
+       opacity: 0;
+       transform: translateY(12px);
+   }
+}
+
+/* --- 1. Обновление типографики (Шрифт Manrope) --- */
+
+body {
+   font-family: 'Manrope', sans-serif; 
+   font-weight: 400; 
+   cursor: auto; /* Замените 'none' на 'auto' */
+}
+
+.hero-content h1 {
+   font-weight: 800; /* Делаем главный заголовок очень жирным */
+   letter-spacing: -0.02em; /* Слегка сжимаем буквы для плотности */
+}
+
+.slogan {
+   font-weight: 300; /* Делаем слоган более легким */
+   font-size: 1.6rem;
+   letter-spacing: 0.01em;
+}
+
+.menu a {
+   font-weight: 700;
+}
+
+
+
+
+
+
+/* --- 3. Полировка деталей интерфейса --- */
+
+/* Новый, более элегантный ховер-эффект для ссылок в меню */
+.menu a {
+   position: relative;
+}
+
+.menu a::after {
+   content: '';
+   position: absolute;
+   width: 100%;
+   height: 2px;
+   bottom: -5px;
+   left: 0;
+   background-color: var(--accent-blue);
+   transform: scaleX(0);
+   transform-origin: bottom right;
+   transition: transform 0.3s ease-out;
+}
+
+.menu a:hover::after {
+   transform: scaleX(1);
+   transform-origin: bottom left;
+}
+
+/* Новый ховер для вторичной кнопки "Скачать резюме" */
+.cta-button-secondary {
+   transition: all 0.3s ease;
+}
+
+.cta-button-secondary:hover {
+   background-color: transparent; /* Убираем синий фон */
+   color: var(--accent-blue);
+   border-color: var(--accent-blue);
+   box-shadow: 0 0 15px rgba(0, 123, 255, 0.5); /* Добавляем свечение */
+}
+
+/* --- 1. Обновление базовой типографики --- */
+body {
+   font-family: 'Roboto Flex', sans-serif; /* Применяем новый шрифт */
+}
+
+/* --- 2. Новый эффект для имени в шапке (логотип) --- */
+.logo {
+   transition: letter-spacing 0.4s ease, color 0.4s ease;
+   cursor: auto;
+}
+
+.logo:hover {
+   letter-spacing: 1.5px; /* Буквы слегка расходятся */
+   color: var(--accent-color); /* Меняем цвет на акцентный */
+}
+
+
+/* --- 3. Анимация для главного заголовка H1 --- */
+.hero-content h1 {
+   font-weight: 800; /* Начальная толщина */
+   /* Плавный переход для цвета и настроек шрифта */
+   transition: color 0.4s ease, font-variation-settings 0.4s ease;
+   cursor: pointer;
+}
+
+.hero-content h1:hover {
+   color: var(--accent-color);
+   /* Анимируем толщину шрифта от 800 до 400 */
+   font-variation-settings: 'wght' 400; 
+}
+
+
+/* --- 4. Обновление ховер-эффектов под новый цвет --- */
+
+/* Убедимся, что все элементы используют новую переменную цвета */
+.cta-button, .cta-button-main {
+   background-color: var(--accent-color);
+   color: var(--dark-bg); /* Текст на ярком фоне лучше сделать темным */
+}
+
+.cta-button:hover, .cta-button-main:hover {
+   background-color: var(--accent-color);
+   box-shadow: 0 0 25px rgba(0, 255, 163, 0.5); /* Тень нового цвета */
+}
+
+.cta-button-secondary {
+   border: 2px solid var(--accent-color);
+}
+
+.cta-button-secondary:hover {
+   color: var(--accent-color);
+   border-color: var(--accent-color);
+   box-shadow: 0 0 15px rgba(0, 255, 163, 0.5); /* Тень нового цвета */
+}
+
+.social-links a:hover {
+   color: var(--accent-color);
+}
+
+.menu a:hover::after {
+   background-color: var(--accent-color); /* Подчеркивание нового цвета */
+}
+
+.scroll-down-indicator:hover {
+   border-color: var(--accent-color);
+}
+
+/* --- 1. Эффект "заполнения энергией" для текста --- */
+
+.interactive-text-glow {
+   /* Градиент теперь от нашего акцентного цвета к белому */
+   background: linear-gradient(to right, var(--accent-color) 50%, var(--accent-white) 50%);
+   background-size: 200% 100%;
+   
+   /* ВАЖНО: Изначально показываем правую (белую) часть градиента */
+   background-position: -100% 0;
+   
+   /* Магия, которая обрезает фон по форме текста */
+   -webkit-background-clip: text;
+   background-clip: text;
+   
+   /* Делаем сам текст прозрачным, чтобы был виден фон */
+   color: transparent;
+   
+   transition: background-position 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.interactive-text-glow:hover {
+   /* При наведении сдвигаем фон, чтобы показать левую (зеленую) часть */
+   background-position: 0 0;
+}
+
+
+/* --- 2. Усиленный эффект для социальных ссылок --- */
+
+.social-links a:hover {
+   color: var(--accent-color);
+   transform: translateY(-3px);
+   /* Добавляем свечение для большей выразительности */
+   text-shadow: 0 0 10px rgba(0, 255, 163, 0.7);
+}
+
+
+/* --- Эффект "Блика" на кнопках --- */
+
+.cta-button::before,
+.cta-button-main::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%; /* Изначально блик находится за пределами кнопки */
+    width: 75%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    /* Наклон блика */
+    transform: skewX(-25deg);
+    transition: left 0.7s ease;
+}
+
+.cta-button:hover::before,
+.cta-button-main:hover::before {
+    left: 150%; /* При наведении блик проносится через всю кнопку */
+}
+
+
+/* --- Стили для секции "Философия" --- */
+
+#philosophy {
+   padding: 100px 0;
+   overflow: hidden;
+   position: relative; /* <-- ДОБАВИТЬ ЭТО */
+   z-index: 2;         /* <-- И ЭТО */
+}
+
+.philosophy-content {
+   padding: 60px;
+   text-align: center;
+   max-width: 800px; /* Ограничиваем ширину для лучшей читаемости */
+   margin: 0 auto;
+}
+
+#philosophy h2 {
+   font-size: 2.5rem;
+   font-weight: 800;
+   color: var(--accent-white);
+   margin-top: 0;
+   margin-bottom: 30px;
+}
+
+.manifesto {
+   font-size: 1.5rem;
+   line-height: 1.6;
+   font-weight: 400;
+   color: var(--accent-white);
+   margin-bottom: 15px;
+}
+
+.sub-manifesto {
+   font-size: 1.2rem;
+   font-weight: 700;
+   color: var(--accent-color); /* Выделяем ключевую мысль акцентным цветом */
+   margin-bottom: 40px;
+}
+
+.details {
+   font-size: 1rem;
+   font-weight: 300;
+   opacity: 0.7; /* Делаем второстепенную информацию менее заметной */
+}
+
+
+/* --- Настройка анимации для появляющихся секций --- */
+
+/* Изначально все элементы в анимируемой секции скрыты */
+.animated-section > .container > * {
+   opacity: 0;
+   transform: translateY(40px);
+   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Когда секция становится видимой, показываем ее контент */
+.animated-section.is-visible > .container > * {
+   opacity: 1;
+   transform: translateY(0);
+}
+
+
+/* --- Стили для УЛУЧШЕННОЙ секции "Философия" --- */
+
+/* Общий заголовок для всех будущих секций */
+.section-title {
+   text-align: center;
+   font-size: 2.8rem;
+   font-weight: 800;
+   color: var(--accent-white);
+   margin-bottom: 40px;
+}
+
+#philosophy .manifesto {
+   max-width: 800px;
+   margin-left: auto;
+   margin-right: auto;
+   text-align: center;
+   font-size: 1.6rem;
+   margin-bottom: 50px;
+}
+
+/* Сетка для двух карточек-принципов */
+.principles-grid {
+   display: flex;
+   justify-content: center;
+   gap: 30px; /* Пространство между карточками */
+   margin-bottom: 50px;
+}
+
+.principle-card {
+   padding: 30px 40px;
+   flex-basis: 350px; /* Задаем базовую ширину карточки */
+   text-align: center;
+}
+
+.principle-card h3 {
+   margin: 0;
+   font-size: 1.4rem;
+   font-weight: 700;
+   color: var(--accent-color);
+}
+
+#philosophy .details {
+   text-align: center;
+}
+
+/* --- УЛУЧШЕННАЯ логика анимации для появления по очереди --- */
+
+/* Скрываем все анимируемые "дети" по умолчанию */
+.animated-section .animated-child {
+   opacity: 0;
+   transform: translateY(40px);
+   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Когда секция становится видимой, показываем ее "детей" */
+.animated-section.is-visible .animated-child {
+   opacity: 1;
+   transform: translateY(0);
+}
+
+/* Применяем задержку анимации, которую мы задали в HTML (data-animation-delay) */
+.animated-section.is-visible .animated-child[data-animation-delay="0.2"] { transition-delay: 0.2s; }
+.animated-section.is-visible .animated-child[data-animation-delay="0.4"] { transition-delay: 0.4s; }
+.animated-section.is-visible .animated-child[data-animation-delay="0.6"] { transition-delay: 0.6s; }
+.animated-section.is-visible .animated-child[data-animation-delay="0.8"] { transition-delay: 0.8s; }
+
+
+/* --- Эффект "Прожектора" для секции Философия --- */
+
+#philosophy::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   z-index: -1; /* Помещаем псевдо-элемент за контентом секции */
+
+   /* Создаем радиальный градиент, который и будет нашим "прожектором" */
+   background: radial-gradient(
+       600px circle at var(--mouse-x) var(--mouse-y), /* Размер и позиция зависят от переменных */
+       rgba(0, 255, 163, 0.15), /* Цвет в центре (наш акцентный, но полупрозрачный) */
+       transparent 80% /* Плавный переход в прозрачность */
+   );
+   opacity: 0; /* Изначально прожектор выключен */
+   transition: opacity 0.5s;
+}
+
+/* Когда мы наводим курсор на всю секцию, "включаем" прожектор */
+#philosophy:hover::before {
+   opacity: 1;
+}
+
+
+/* --- Стили для секции "Опыт" (HUD-версия) --- */
+#experience {
+   padding: 100px 0;
+   position: relative;
+   z-index: 2;
+}
+
+.timeline {
+   position: relative;
+   max-width: 800px;
+   margin: 0 auto;
+   padding: 20px 0;
+}
+
+/* Вертикальная линия таймлайна */
+.timeline::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 20px;
+   height: 100%;
+   width: 2px;
+   background: rgba(0, 255, 163, 0.2); /* Делаем линию акцентного цвета, но бледной */
+}
+
+.timeline-item {
+   margin-bottom: 30px;
+   position: relative;
+   padding-left: 50px;
+}
+
+/* Точка на линии таймлайна */
+.timeline-item::before {
+   content: '';
+   position: absolute;
+   left: 14px;
+   top: 15px;
+   width: 14px;
+   height: 14px;
+   border-radius: 50%;
+   background: var(--dark-bg);
+   border: 3px solid var(--accent-color);
+   z-index: 1;
+   transition: all 0.3s ease;
+}
+
+.timeline-item:hover::before {
+   transform: scale(1.2);
+   box-shadow: 0 0 15px var(--accent-color);
+}
+
+.timeline-item-header {
+   /* Убираем фон, делаем прозрачным */
+   background: transparent;
+   padding: 10px 0;
+   cursor: pointer;
+   position: relative; /* Для псевдо-элементов */
+}
+
+/* Фоновая сетка, появляющаяся при наведении */
+.timeline-item-header::after {
+   content: '';
+   position: absolute;
+   top: -10px;
+   left: -20px;
+   right: -20px;
+   bottom: -10px;
+   background-image:
+       linear-gradient(var(--accent-color) 1px, transparent 1px),
+       linear-gradient(to right, var(--accent-color) 1px, transparent 1px);
+   background-size: 20px 20px;
+   opacity: 0;
+   transition: opacity 0.3s ease;
+   z-index: -1;
+   pointer-events: none;
+}
+
+.timeline-item-header:hover::after {
+   opacity: 0.1; /* Показываем сетку */
+}
+
+/* Угловые скобки */
+.timeline-item-header::before {
+   content: '';
+   position: absolute;
+   top: -2px;
+   left: -10px;
+   width: 10px;
+   height: 10px;
+   border-left: 2px solid var(--accent-color);
+   border-top: 2px solid var(--accent-color);
+   transition: all 0.3s ease;
+   opacity: 0.5;
+}
+
+.timeline-item-header:hover::before {
+   transform: translate(-5px, -5px);
+   opacity: 1;
+}
+
+.timeline-item-date {
+   display: block;
+   font-family: 'Roboto Mono', monospace; /* Применяем моноширинный шрифт */
+   font-size: 0.9rem;
+   font-weight: 400;
+   opacity: 0.7;
+   margin-bottom: 8px;
+}
+
+.timeline-item-title {
+   margin: 0;
+   font-size: 1.3rem;
+   font-weight: 700;
+   color: var(--accent-white);
+}
+
+/* Улучшенная анимация раскрытия */
+.timeline-item-body {
+   max-height: 0;
+   overflow: hidden;
+   opacity: 0;
+   transform: translateY(-10px);
+   transition: all 0.5s ease-out;
+   padding-left: 20px;
+}
+
+.timeline-item.is-open .timeline-item-body {
+   max-height: 500px;
+   opacity: 1;
+   transform: translateY(0);
+   padding-top: 20px;
+   padding-bottom: 10px;
+}
+
+.timeline-item-body ul {
+   margin: 0;
+   padding-left: 20px;
+   border-left: 1px solid rgba(0, 255, 163, 0.2);
+}
+
+.timeline-item-body li {
+   margin-bottom: 10px;
+   line-height: 1.6;
+}
+
+/* --- Стили для ссылки на кейс в таймлайне --- */
+.case-link {
+   font-family: 'Roboto Mono', monospace; /* Используем наш "компьютерный" шрифт */
+   font-size: 0.85rem;
+   font-weight: 700;
+   text-decoration: none;
+   color: var(--accent-color);
+   border: 1px solid rgba(0, 255, 163, 0.4); /* Бледная рамка */
+   padding: 2px 8px;
+   border-radius: 4px;
+   margin-left: 8px;
+   transition: all 0.3s ease;
+   opacity: 0.7; /* Делаем чуть менее заметной по умолчанию */
+}
+
+.case-link:hover {
+   background-color: rgba(0, 255, 163, 0.1); /* Легкая подсветка фона */
+   border-color: var(--accent-color); /* Рамка становится яркой */
+   box-shadow: 0 0 10px rgba(0, 255, 163, 0.5); /* Добавляем свечение */
+   opacity: 1; /* Делаем яркой при наведении */
+}
+
+
+/* --- Стили для секции "Навыки" --- */
+/* --- Стили для секции "Навыки" (3D-версия) --- */
+/* --- Стили для секции "Навыки" (финальная 3D-версия) --- */
+#skills {
+   padding: 100px 0;
+   position: relative;
+   z-index: 2;
+   background-color: var(--dark-bg);
+}
+
+.skills-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+   gap: 40px;
+   /* Создаем 3D-пространство для дочерних карточек */
+   perspective: 1500px;
+}
+
+.skill-card {
+   background-color: #1a1d24;
+   padding: 40px;
+   border-radius: 12px;
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   text-align: center;
+   transition: transform 0.4s ease-out, box-shadow 0.4s ease-out, border-color 0.4s ease-out;
+   transform-style: preserve-3d;
+   /* Добавляем эти свойства для центрирования */
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+}
+
+.skill-card:hover {
+   border-color: rgba(0, 255, 163, 0.5);
+   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.skill-card-icon {
+   color: var(--accent-color);
+   margin-bottom: 20px;
+   opacity: 0.7;
+   transition: opacity 0.3s ease;
+}
+
+.skill-card:hover .skill-card-icon {
+   opacity: 1;
+}
+
+.skill-card h3 {
+   font-family: 'Oswald', sans-serif;
+   /* Делаем шрифт "резиновым": минимум 1.6rem, максимум 2rem, в идеале 4vw */
+   font-size: clamp(1.6rem, 4vw, 2rem);
+   color: var(--accent-white);
+   margin-top: 0;
+   margin-bottom: 30px;
+   
+   /* Эти свойства гарантируют правильный перенос, если понадобится */
+   overflow-wrap: break-word;
+   word-wrap: break-word;
+   word-break: break-word;
+   
+   /* Убираем свойства, которые делали слова слишком длинными */
+   text-transform: none; /* Убираем UPPERCASE */
+   letter-spacing: normal; /* Убираем лишний отступ */
+}
+
+.skill-tags {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 12px;
+   justify-content: center;
+}
+
+.skill-tag {
+   background-color: rgba(255, 255, 255, 0.05);
+   color: rgba(255, 255, 255, 0.8);
+   padding: 8px 15px;
+   border-radius: 20px;
+   font-size: 0.9rem;
+   font-weight: 500;
+   /* Анимация появления */
+   opacity: 0;
+   transform: translateY(10px);
+   transition: all 0.4s ease-out;
+}
+
+/* При наведении на карточку, показываем теги */
+.skill-card:hover .skill-tag {
+   opacity: 1;
+   transform: translateY(0);
+}
+
+/* Создаем эффект появления "один за другим" */
+.skill-card:hover .skill-tag:nth-child(1) { transition-delay: 0.1s; }
+.skill-card:hover .skill-tag:nth-child(2) { transition-delay: 0.15s; }
+.skill-card:hover .skill-tag:nth-child(3) { transition-delay: 0.2s; }
+.skill-card:hover .skill-tag:nth-child(4) { transition-delay: 0.25s; }
+.skill-card:hover .skill-tag:nth-child(5) { transition-delay: 0.3s; }
+.skill-card:hover .skill-tag:nth-child(6) { transition-delay: 0.35s; }
+.skill-card:hover .skill-tag:nth-child(7) { transition-delay: 0.4s; }
+
+
+/* --- Стили для "Глитч"-эффекта на тегах --- */
+
+.skill-tag {
+   position: relative; /* Необходимо для позиционирования псевдо-элементов */
+   cursor: pointer;
+}
+
+/* Создаем два псевдо-элемента для глитча */
+.skill-tag::before,
+.skill-tag::after {
+   content: attr(data-text); /* Берем текст из data-атрибута */
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   background: #1a1d24; /* Прячем текст под цвет фона карточки */
+   overflow: hidden;
+   clip-path: inset(50% 50% 50% 50%); /* Изначально обрезаем и скрываем */
+}
+
+.skill-tag::before {
+   left: -2px;
+   text-shadow: 1px 0 var(--accent-color);
+}
+
+.skill-tag::after {
+   left: 2px;
+   text-shadow: -1px 0 rgba(255, 0, 255, 0.7); /* Добавляем второй цвет для эффекта */
+   animation-delay: 0.5s;
+}
+
+/* При наведении на тег, запускаем анимацию для псевдо-элементов */
+.skill-tag:hover::before,
+.skill-tag:hover::after {
+   animation: glitch-anim 1s infinite linear alternate-reverse;
+}
+
+/* Анимация, которая "рвет" и показывает текст */
+@keyframes glitch-anim {
+   0% { clip-path: inset(40% 0 60% 0); }
+   20% { clip-path: inset(10% 0 85% 0); }
+   40% { clip-path: inset(50% 0 30% 0); }
+   60% { clip-path: inset(30% 0 70% 0); }
+   80% { clip-path: inset(80% 0 5% 0); }
+   100% { clip-path: inset(50% 0 50% 0); }
+}
+
+
+
+
+/* --- Стили для секции "Портфолио" --- */
+/* --- Стили для секции "Портфолио" (Надежная версия) --- */
+#portfolio {
+   padding: 100px 0;
+   position: relative;
+   z-index: 2;
+   background-color: var(--dark-bg);
+}
+
+.portfolio-grid {
+   display: grid;
+   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+   gap: 30px;
+}
+
+.portfolio-card {
+   position: relative;
+   overflow: hidden;
+   border-radius: 12px;
+   background-color: #1a1d24;
+   aspect-ratio: 4 / 3;
+   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-card img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.portfolio-card:hover img {
+   transform: scale(1.05);
+   filter: brightness(0.4); /* Приглушаем яркость картинки */
+}
+
+.portfolio-card-overlay {
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   padding: 30px;
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-end; /* Прижимаем контент к низу */
+   align-items: flex-start; /* и к левому краю */
+   
+   /* Изначально контент скрыт */
+   opacity: 0;
+   transform: translateY(20px);
+   transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.portfolio-card:hover .portfolio-card-overlay {
+   opacity: 1;
+   transform: translateY(0);
+}
+
+.portfolio-card-overlay h3 {
+   margin: 0 0 10px 0;
+   font-size: 1.6rem;
+   color: var(--accent-white);
+}
+
+.portfolio-card-overlay p {
+   margin: 0 0 20px 0;
+   font-size: 1rem;
+   color: var(--accent-white); /* Явно указываем цвет текста */
+   opacity: 0.8;
+}
+
+.portfolio-card-overlay .view-project-btn {
+   display: inline-block;
+   padding: 10px 20px;
+   border-radius: 8px;
+   background: var(--accent-color);
+   color: var(--dark-bg);
+   font-weight: 700;
+   text-decoration: none;
+}
+
+
+
+/* --- Стили для секции "Образование и Языки" --- */
+#education-languages {
+   padding: 100px 0;
+   position: relative;
+   z-index: 2;
+   background-color: #1a1d24; /* Отделяем секцию цветом */
+}
+
+.education-languages-container {
+   display: flex;
+   justify-content: space-around;
+   gap: 40px;
+   flex-wrap: wrap; /* Для мобильных устройств */
+}
+
+.education-column, .languages-column {
+   flex: 1;
+   min-width: 300px;
+}
+
+.education-column h3, .languages-column h3 {
+   font-size: 1.8rem;
+   color: var(--accent-color);
+   margin-top: 0;
+   margin-bottom: 30px;
+   border-bottom: 1px solid rgba(0, 255, 163, 0.2);
+   padding-bottom: 15px;
+}
+
+.education-column ul, .languages-column ul {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+}
+
+.education-column li {
+   margin-bottom: 25px;
+}
+.languages-column li {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.education-column h4 {
+   margin: 0 0 5px 0;
+   font-size: 1.2rem;
+   color: var(--accent-white);
+}
+
+.education-column p {
+   margin: 0;
+   opacity: 0.8;
+}
+
+/* --- Стили для секции "Контакты" --- */
+#contact {
+   padding: 100px 0;
+   position: relative;
+   z-index: 2;
+   background-color: var(--dark-bg);
+}
+
+.contact-container {
+   display: flex;
+   gap: 50px;
+   flex-wrap: wrap;
+}
+
+.contact-details {
+   flex: 1;
+}
+.contact-form {
+   flex: 1.5; /* Делаем форму чуть шире */
+}
+
+.contact-details p {
+   font-size: 1.1rem;
+   line-height: 1.7;
+   opacity: 0.8;
+}
+
+.contact-link {
+   display: block;
+   margin-top: 20px;
+   font-size: 1.3rem;
+   font-weight: 700;
+   color: var(--accent-white);
+   text-decoration: none;
+   transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+   color: var(--accent-color);
+}
+
+.contact-form h4 {
+   margin: 0 0 20px 0;
+   font-size: 1.5rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+   width: 100%;
+   padding: 15px;
+   margin-bottom: 20px;
+   background-color: #1a1d24;
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 8px;
+   color: var(--accent-white);
+   font-family: 'Roboto Flex', sans-serif;
+   font-size: 1rem;
+   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+   outline: none;
+   border-color: var(--accent-color);
+   box-shadow: 0 0 10px rgba(0, 255, 163, 0.3);
+}
+
+.contact-form textarea {
+   resize: vertical; /* Позволяем менять высоту */
+}
+
+.contact-form button {
+   width: 100%;
+   border: none;
+}
+
+
+/* --- Стили для Подвала (Footer) --- */
+footer {
+   padding: 40px 0;
+   background-color: #1a1d24;
+   text-align: center;
+   color: rgba(255, 255, 255, 0.5);
+   position: relative;
+   z-index: 2;
+}
+
+footer p {
+   margin: 0;
+}
+
+/* --- Улучшения для секции "Образование и Языки" --- */
+.languages-list li {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   margin-bottom: 25px;
+}
+.lang-label {
+   flex-basis: 120px;
+   font-size: 1.1rem;
+}
+.progress-bar-container {
+   flex-grow: 1;
+   height: 20px;
+   background-color: rgba(255, 255, 255, 0.1);
+   border-radius: 10px;
+   overflow: hidden;
+}
+.progress-bar {
+   width: 0; /* Изначально пустой */
+   height: 100%;
+   background: linear-gradient(90deg, var(--accent-gradient-start), var(--accent-gradient-end));
+   border-radius: 10px;
+   display: flex;
+   align-items: center;
+   justify-content: flex-end;
+   padding-right: 10px;
+   color: var(--dark-bg);
+   font-weight: 700;
+   font-size: 0.8rem;
+   box-sizing: border-box;
+   transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* --- Улучшения для кнопки отправки формы --- */
+.contact-form button.is-sending {
+   background: #6c757d;
+   cursor: wait;
+}
+.contact-form button.is-success {
+   background: #28a745;
+}
+.contact-form button.is-error {
+   background: #dc3545;
+}
+
+/* --- Улучшения для подвала --- */
+.footer-container {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+.footer-socials a {
+   color: rgba(255, 255, 255, 0.5);
+   text-decoration: none;
+   margin-left: 20px;
+   transition: color 0.3s ease;
+}
+.footer-socials a:hover {
+   color: var(--accent-color);
+}
+
+/*
+==============================================
+--- АДАПТИВНОСТЬ (MEDIA QUERIES) ---
+==============================================
+*/
+
+/* --- Планшеты и небольшие ноутбуки (до 992px) --- */
+@media (max-width: 992px) {
+   /* Прячем десктопное меню и показываем бургер */
+   .menu, .header-cta {
+       display: none;
+   }
+   .burger-menu-btn {
+       display: flex; /* Показываем кнопку */
+       flex-direction: column;
+       justify-content: space-around;
+       width: 30px;
+       height: 25px;
+       background: transparent;
+       border: none;
+       cursor: pointer;
+       padding: 0;
+       z-index: 10;
+   }
+   .burger-menu-btn span {
+       width: 100%;
+       height: 3px;
+       background-color: var(--accent-white);
+       border-radius: 2px;
+   }
+
+   /* Стили для панели мобильного меню */
+   .mobile-nav {
+       position: fixed;
+       top: 0;
+       right: 0;
+       width: 100%;
+       height: 100%;
+       background-color: var(--dark-bg);
+       z-index: 1001; /* Поверх всего */
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+       /* Изначально скрыто за правым краем */
+       transform: translateX(100%);
+       transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+   }
+   .mobile-nav.is-open {
+       transform: translateX(0); /* Показываем */
+   }
+   .mobile-nav a {
+       font-size: 2rem;
+       color: var(--accent-white);
+       text-decoration: none;
+       margin: 20px 0;
+   }
+   .cta-button-mobile {
+       margin-top: 40px;
+       padding: 15px 30px;
+       background: var(--accent-color);
+       color: var(--dark-bg);
+       border-radius: 8px;
+   }
+
+   /* Кнопка закрытия мобильного меню */
+   .close-menu-btn {
+       position: absolute;
+       top: 30px;
+       right: 30px;
+       font-size: 3rem;
+       color: var(--accent-white);
+       background: transparent;
+       border: none;
+       cursor: pointer;
+   }
+}
+
+
+/* --- Мобильные телефоны (до 768px) --- */
+@media (max-width: 768px) {
+   /* Уменьшаем отступы секций */
+   section {
+       padding: 60px 5%;
+   }
+   
+   /* Уменьшаем шрифты */
+   .hero-content h1 {
+       font-size: 2.8rem;
+   }
+   .slogan {
+       font-size: 1.2rem;
+   }
+   .section-title {
+       font-size: 2.2rem;
+   }
+   #philosophy .manifesto {
+       font-size: 1.2rem;
+   }
+
+   /* Ставим колонки друг под друга */
+   .education-languages-container, .contact-container {
+       flex-direction: column;
+   }
+   .skills-grid, .portfolio-grid {
+       grid-template-columns: 1fr; /* Одна карточка в ряд */
+   }
+}
