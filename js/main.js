@@ -1,188 +1,275 @@
+/* ===================================================================
+ * Файл: main.js
+ * Описание: Оптимизированный и модульный JavaScript для интерактивности сайта-портфолио.
+ * Версия: 2.0 (Рефакторинг)
+ *
+ * --- СТРУКТУРА ---
+ * 1. Главная функция инициализации (init)
+ * 2. Модуль: Плавная прокрутка
+ * 3. Модуль: Мобильное меню (Бургер)
+ * 4. Модуль: Анимации при прокрутке (Intersection Observers)
+ * 5. Модуль: Эффекты, управляемые курсором (Прожектор, наклон карточек)
+ * 6. Модуль: Аккордеон для таймлайна
+ * 7. Модуль: Форма контактов с EmailJS
+ * ================================================================ */
+
+/**
+ * Главная функция, которая запускается после полной загрузки DOM.
+ * Вызывает все остальные функции инициализации.
+ */
 document.addEventListener('DOMContentLoaded', () => {
+    // Проверка на наличие ключевых библиотек для избежания ошибок
+    if (typeof emailjs === 'undefined') {
+        console.error('Ошибка: Библиотека EmailJS не загружена. Форма отправки не будет работать.');
+    }
+    if (typeof VANTA === 'undefined') {
+        console.warn('Предупреждение: Библиотека Vanta.js не загружена. Анимация фона не будет отображаться.');
+    }
 
-   // --- Плавная прокрутка для якорных ссылок в меню ---
-   // Этот код находит все ссылки, которые ведут на якоря (начинаются с #)
-   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-       // и добавляет обработчик клика
-       anchor.addEventListener('click', function (e) {
-           e.preventDefault(); // Отменяем стандартное поведение "прыжка"
-
-           const targetId = this.getAttribute('href');
-           const targetElement = document.querySelector(targetId);
-
-           // Если элемент с таким id найден, плавно прокручиваем к нему
-           if (targetElement) {
-               targetElement.scrollIntoView({
-                   behavior: 'smooth' // Магия планой прокрутки
-               });
-           }
-       });
-   });
-
-});
-
-// --- Анимация секций при прокрутке ---
-const animatedSections = document.querySelectorAll('.animated-section');
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        // Если секция появляется в поле зрения
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-        }
-    });
-}, {
-    threshold: 0.1 // Анимация начнется, когда 10% секции видно
-});
-
-// Начинаем "наблюдать" за каждой анимируемой секцией
-animatedSections.forEach(section => {
-    observer.observe(section);
+    // Инициализация всех интерактивных модулей
+    initSmoothScroll();
+    initMobileMenu();
+    initIntersectionObservers();
+    initMouseEffects();
+    initTimelineAccordion();
+    initContactForm();
 });
 
 
-// --- Логика для эффекта "Прожектора" в секции "Философия" ---
-const philosophySection = document.getElementById('philosophy');
+/**
+ * 1. МОДУЛЬ: ПЛАВНАЯ ПРОКРУТКА
+ * Обеспечивает плавную навигацию по якорным ссылкам.
+ */
+function initSmoothScroll() {
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    if (!anchors.length) return;
 
-if (philosophySection) {
-    philosophySection.addEventListener('mousemove', e => {
-        // Вычисляем позицию курсора внутри секции
-        const rect = philosophySection.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        // Передаем эти координаты в наши CSS переменные
-        philosophySection.style.setProperty('--mouse-x', `${x}px`);
-        philosophySection.style.setProperty('--mouse-y', `${y}px`);
+    anchors.forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            
+            // Исключаем пустые ссылки, чтобы избежать ошибок
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
     });
 }
 
 
-// --- Логика для интерактивного таймлайна (аккордеон) ---
-const timelineHeaders = document.querySelectorAll('.timeline-item-header');
+/**
+ * 2. МОДУЛЬ: МОБИЛЬНОЕ МЕНЮ
+ * Управляет открытием и закрытием бургер-меню.
+ */
+function initMobileMenu() {
+    const burgerBtn = document.querySelector('.burger-menu-btn');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const closeBtn = document.querySelector('.close-menu-btn');
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
 
-timelineHeaders.forEach(header => {
-    header.addEventListener('click', () => {
-        const item = header.parentElement;
-        
-        // Проверяем, был ли этот элемент уже открыт
-        const isOpen = item.classList.contains('is-open');
+    if (!burgerBtn || !mobileNav || !closeBtn) {
+        console.warn('Элементы мобильного меню не найдены.');
+        return;
+    }
 
-        // Сначала закрываем все открытые элементы
-        document.querySelectorAll('.timeline-item').forEach(el => {
-            el.classList.remove('is-open');
-        });
+    const toggleMenu = (isOpen) => {
+        mobileNav.classList.toggle('is-open', isOpen);
+        burgerBtn.setAttribute('aria-expanded', isOpen);
+        mobileNav.setAttribute('aria-hidden', !isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : ''; // Блокируем скролл страницы при открытом меню
+    };
 
-        // Если элемент не был открыт, открываем его
-        if (!isOpen) {
-            item.classList.add('is-open');
+    burgerBtn.addEventListener('click', () => toggleMenu(true));
+    closeBtn.addEventListener('click', () => toggleMenu(false));
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => toggleMenu(false));
+    });
+
+    // Закрытие меню по клавише Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('is-open')) {
+            toggleMenu(false);
         }
     });
-});
+}
 
 
-// --- Логика для 3D-наклона карточек с навыками ---
-const skillCards = document.querySelectorAll('.skill-card');
+/**
+ * 3. МОДУЛЬ: АНИМАЦИИ ПРИ ПРОКРУТКЕ
+ * Использует Intersection Observer для анимации секций и прогресс-баров.
+ */
+function initIntersectionObservers() {
+    const animationOptions = {
+        threshold: 0.1, // Анимация начнется, когда 10% секции видно
+        rootMargin: '0px 0px -50px 0px' // Начинаем чуть раньше, чем элемент появится полностью
+    };
 
-skillCards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left; // X позиция внутри карточки
-        const y = e.clientY - rect.top;  // Y позиция внутри карточки
+    const sectionObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                // Отписываемся от наблюдения после анимации для повышения производительности
+                observer.unobserve(entry.target); 
+            }
+        });
+    }, animationOptions);
 
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -8; // Макс наклон по X: 8 градусов
-        const rotateY = ((x - centerX) / centerX) * 8;  // Макс наклон по Y: 8 градусов
-
-        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    // Наблюдаем за каждой секцией с классом .animated-section
+    document.querySelectorAll('.animated-section').forEach(section => {
+        sectionObserver.observe(section);
     });
 
-    card.addEventListener('mouseleave', () => {
-        // Возвращаем карточку в исходное положение
-        card.style.transform = `rotateX(0) rotateY(0)`;
+    // Отдельный наблюдатель для прогресс-баров
+    const langSection = document.getElementById('education-languages');
+    if (langSection) {
+        const langObserver = new IntersectionObserver((entries, observer) => {
+            if (entries[0].isIntersecting) {
+                document.querySelectorAll('.progress-bar').forEach(bar => {
+                    const level = bar.getAttribute('data-level');
+                    bar.style.width = level;
+                });
+                observer.unobserve(langSection);
+            }
+        }, { threshold: 0.5 });
+        langObserver.observe(langSection);
+    }
+}
+
+
+/**
+ * 4. МОДУЛЬ: ЭФФЕКТЫ, УПРАВЛЯЕМЫЕ КУРСОРОМ
+ * Оптимизированные эффекты для "прожектора" и 3D-наклона карточек.
+ */
+function initMouseEffects() {
+    // Эффект "прожектора" для секции "Философия"
+    const philosophySection = document.getElementById('philosophy');
+    if (philosophySection) {
+        philosophySection.addEventListener('mousemove', e => {
+            const rect = philosophySection.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            philosophySection.style.setProperty('--mouse-x', `${x}px`);
+            philosophySection.style.setProperty('--mouse-y', `${y}px`);
+        });
+    }
+
+    // 3D-наклон для карточек с навыками
+    const skillCards = document.querySelectorAll('.skill-card');
+    if (skillCards.length > 0) {
+        skillCards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -7; // Уменьшил угол для более сдержанного эффекта
+                const rotateY = ((x - centerX) / centerX) * 7;
+                
+                // Используем requestAnimationFrame для плавной анимации
+                requestAnimationFrame(() => {
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                requestAnimationFrame(() => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            });
+        });
+    }
+}
+
+
+/**
+ * 5. МОДУЛЬ: АККОРДЕОН ДЛЯ ТАЙМЛАЙНА
+ * Позволяет открывать и закрывать элементы в секции "Опыт".
+ */
+function initTimelineAccordion() {
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    if (!timelineItems.length) return;
+
+    timelineItems.forEach(item => {
+        const header = item.querySelector('.timeline-item-header');
+        if (header) {
+            header.addEventListener('click', () => {
+                // Проверяем, был ли этот элемент уже открыт
+                const isOpen = item.classList.contains('is-open');
+                
+                // Закрываем все другие элементы
+                timelineItems.forEach(el => el.classList.remove('is-open'));
+
+                // Если элемент не был открыт, открываем его. Иначе - он просто закроется.
+                if (!isOpen) {
+                    item.classList.add('is-open');
+                }
+            });
+        }
     });
-});
+}
 
 
-// --- Инициализация EmailJS и отправка формы ---
-(function() {
-    // Вставьте сюда ваши данные из EmailJS
-    emailjs.init("kFJ1u_eSRT6GosyVDbJuO"); 
-})();
+/**
+ * 6. МОДУЛЬ: ФОРМА КОНТАКТОВ С EMAILJS
+ * Управляет отправкой данных из формы и обратной связью для пользователя.
+ */
+function initContactForm() {
+    const contactForm = document.querySelector('.contact-form');
+    if (!contactForm) return;
 
-const contactForm = document.querySelector('.contact-form');
-if (contactForm) {
+    // ВАШИ ДАННЫЕ ИЗ EMAILJS
+    const serviceID = 'service_2ph61ce'; // Замените на ваш Service ID
+    const templateID = 'template_n9uzzvf'; // Замените на ваш Template ID
+    const userID = 'kFJ1u_eSRT6GosyVDbJuO';      // Замените на ваш Public Key (User ID)
+
+    // Инициализация EmailJS
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(userID);
+    } else {
+        console.error('Не удалось инициализировать EmailJS.');
+        return;
+    }
+
     contactForm.addEventListener('submit', function(e) {
-        e.preventDefault(); // Отменяем стандартную отправку
+        e.preventDefault();
         
         const submitBtn = this.querySelector('button');
         const originalBtnText = submitBtn.textContent;
 
-        // Показываем состояние отправки
+        // Обновляем состояние кнопки
         submitBtn.textContent = 'Отправка...';
         submitBtn.classList.add('is-sending');
         submitBtn.disabled = true;
 
-        emailjs.sendForm('service_2ph61ce', 'template_n9uzzvf', this)
+        emailjs.sendForm(serviceID, templateID, this)
             .then(() => {
-                // Успех
                 submitBtn.textContent = 'Заявка отправлена!';
                 submitBtn.classList.remove('is-sending');
                 submitBtn.classList.add('is-success');
+                contactForm.reset(); // Очищаем форму
+                setTimeout(() => { // Возвращаем кнопку в исходное состояние через 3 секунды
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.classList.remove('is-success');
+                    submitBtn.disabled = false;
+                }, 3000);
             }, (error) => {
-                // Ошибка
                 submitBtn.textContent = 'Ошибка! Попробуйте снова.';
                 submitBtn.classList.remove('is-sending');
                 submitBtn.classList.add('is-error');
-                console.log('FAILED...', error);
+                console.error('Ошибка отправки EmailJS:', error);
+                setTimeout(() => { // Возвращаем кнопку в исходное состояние
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.classList.remove('is-error');
+                    submitBtn.disabled = false;
+                }, 3000);
             });
-    });
-}
-
-
-// --- Анимация прогресс-баров при прокрутке ---
-const progressBars = document.querySelectorAll('.progress-bar');
-const langSection = document.getElementById('education-languages');
-
-const langObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            progressBars.forEach(bar => {
-                const level = bar.getAttribute('data-level');
-                bar.style.width = level;
-            });
-            langObserver.unobserve(langSection); // Запускаем анимацию один раз
-        }
-    });
-}, { threshold: 0.5 });
-
-if(langSection) {
-    langObserver.observe(langSection);
-}
-
-// --- Логика для мобильного меню ---
-const burgerBtn = document.querySelector('.burger-menu-btn');
-const mobileNav = document.querySelector('.mobile-nav');
-const closeBtn = document.querySelector('.close-menu-btn');
-const mobileNavLinks = document.querySelectorAll('.mobile-nav a');
-
-if (burgerBtn && mobileNav && closeBtn) {
-    // Открываем меню по клику на бургер
-    burgerBtn.addEventListener('click', () => {
-        mobileNav.classList.add('is-open');
-    });
-
-    // Закрываем меню по клику на крестик
-    closeBtn.addEventListener('click', () => {
-        mobileNav.classList.remove('is-open');
-    });
-
-    // Закрываем меню по клику на любую ссылку
-    mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileNav.classList.remove('is-open');
-        });
     });
 }

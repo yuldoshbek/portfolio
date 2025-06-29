@@ -1,157 +1,93 @@
+/* ===================================================================
+ * Файл: three-scene.js
+ * Описание: Оптимизированный и доработанный скрипт для инициализации
+ * фона Vanta.js с упором на производительность и доступность.
+ * Версия: 2.1 (Оптимизация)
+ *
+ * --- УЛУЧШЕНИЯ ---
+ * - Добавлена проверка на `prefers-reduced-motion` для доступности.
+ * - Параметры вынесены в конфигурационные объекты для удобства.
+ * - Реализован правильный жизненный цикл: создание и уничтожение
+ * эффекта для освобождения ресурсов.
+ * ================================================================ */
+
 document.addEventListener('DOMContentLoaded', () => {
-   const container = document.getElementById('three-canvas-container');
-   if (!container) return;
+    // Проверяем наличие библиотеки Vanta.js
+    if (typeof VANTA === 'undefined') {
+        console.warn('Библиотека Vanta.js не загружена. Анимация фона не будет отображаться.');
+        return;
+    }
 
-   // 1. Сцена и Камера
-   const scene = new THREE.Scene();
-   const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-   camera.position.set(0, 5, 20); // Позиция камеры
+    const vantaContainer = document.getElementById('vanta-canvas-container');
+    if (!vantaContainer) {
+        // Если контейнер не найден, ничего не делаем
+        return;
+    }
 
-   // 2. Рендерер
-   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-   renderer.setSize(container.clientWidth, container.clientHeight);
-   renderer.setPixelRatio(window.devicePixelRatio);
-   container.appendChild(renderer.domElement);
+    // --- КОНФИГУРАЦИИ АНИМАЦИИ ---
 
-   // 3. Создание "Архитектурной Сетки"
-   const gridHelper = new THREE.GridHelper(
-       200, // Размер сетки
-       50, // Количество делений
-       0xaaaaaa, // Цвет основных линий
-       0x555555  // Цвет вспомогательных линий
-   );
-   gridHelper.material.opacity = 0.15; // Делаем сетку очень бледной
-   gridHelper.material.transparent = true;
-   scene.add(gridHelper);
+    // Стандартные, качественные настройки для большинства пользователей
+    const VANTA_CONFIG_DEFAULT = {
+        el: vantaContainer,
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x00ffa3,
+        backgroundColor: 0x121217,
+        points: 14.00,      // Слегка увеличим количество для плотности
+        maxDistance: 25.00, // и дистанцию для лучшей связи
+        spacing: 17.00
+    };
 
-   // 4. Создание "Статичных Звезд" для глубины
-   const starVertices = [];
-   for (let i = 0; i < 500; i++) {
-       const x = (Math.random() - 0.5) * 500;
-       const y = (Math.random() - 0.5) * 500;
-       const z = (Math.random() - 0.5) * 500;
-       starVertices.push(x, y, z);
-   }
-   const starGeometry = new THREE.BufferGeometry();
-   starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-   const starMaterial = new THREE.PointsMaterial({
-       color: 0x888888,
-       size: 0.1,
-       transparent: true,
-       opacity: 0.5
-   });
-   const stars = new THREE.Points(starGeometry, starMaterial);
-   scene.add(stars);
+    // Облегченные настройки для режима "пониженного движения"
+    const VANTA_CONFIG_REDUCED = {
+        ...VANTA_CONFIG_DEFAULT, // Берем за основу стандартные настройки
+        mouseControls: false,    // Отключаем интерактивность
+        touchControls: false,
+        points: 4.00,            // Значительно снижаем количество точек
+        maxDistance: 10.00,
+        spacing: 30.00           // и увеличиваем расстояние между ними
+    };
 
+    // --- ЛОГИКА ИНИЦИАЛИЗАЦИИ И УНИЧТОЖЕНИЯ ---
 
-   // 5. Интерактивность с мышью
-   let mouseX = 0;
-   let mouseY = 0;
-   document.addEventListener('mousemove', (event) => {
-       mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-       mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-   });
+    let vantaEffect = null; // Переменная для хранения активного эффекта
 
-   // 6. Анимация
-   const clock = new THREE.Clock();
-   function animate() {
-       requestAnimationFrame(animate);
-       const elapsedTime = clock.getElapsedTime();
+    /**
+     * Инициализирует Vanta-эффект на основе настроек пользователя.
+     */
+    function initVanta() {
+        // Проверяем, предпочитает ли пользователь пониженное движение
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-       // Очень медленное вращение сетки для создания атмосферы
-       gridHelper.rotation.y = elapsedTime * 0.03;
+        const activeConfig = prefersReducedMotion ? VANTA_CONFIG_REDUCED : VANTA_CONFIG_DEFAULT;
 
-       // Плавное смещение камеры вслед за мышью
-       camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-       camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
-       camera.lookAt(scene.position);
+        // Создаем эффект, только если он еще не был создан
+        if (!vantaEffect) {
+            vantaEffect = VANTA.NET(activeConfig);
+        }
+    }
 
-       renderer.render(scene, camera);
-   }
-   animate();
+    /**
+     * Уничтожает активный Vanta-эффект и освобождает ресурсы.
+     */
+    function destroyVanta() {
+        if (vantaEffect) {
+            vantaEffect.destroy();
+            vantaEffect = null;
+        }
+    }
 
-   // 7. Адаптивность
-   window.addEventListener('resize', () => {
-       camera.aspect = container.clientWidth / container.clientHeight;
-       camera.updateProjectionMatrix();
-       renderer.setSize(container.clientWidth, container.clientHeight);
-   });
-});document.addEventListener('DOMContentLoaded', () => {
-   const container = document.getElementById('three-canvas-container');
-   if (!container) return;
+    // --- ЗАПУСК ---
 
-   // 1. Сцена и Камера
-   const scene = new THREE.Scene();
-   const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
-   camera.position.set(0, 5, 20); // Позиция камеры
+    // Инициализируем анимацию
+    initVanta();
 
-   // 2. Рендерер
-   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-   renderer.setSize(container.clientWidth, container.clientHeight);
-   renderer.setPixelRatio(window.devicePixelRatio);
-   container.appendChild(renderer.domElement);
-
-   // 3. Создание "Архитектурной Сетки"
-   const gridHelper = new THREE.GridHelper(
-       200, // Размер сетки
-       50, // Количество делений
-       0xaaaaaa, // Цвет основных линий
-       0x555555  // Цвет вспомогательных линий
-   );
-   gridHelper.material.opacity = 0.15; // Делаем сетку очень бледной
-   gridHelper.material.transparent = true;
-   scene.add(gridHelper);
-
-   // 4. Создание "Статичных Звезд" для глубины
-   const starVertices = [];
-   for (let i = 0; i < 500; i++) {
-       const x = (Math.random() - 0.5) * 500;
-       const y = (Math.random() - 0.5) * 500;
-       const z = (Math.random() - 0.5) * 500;
-       starVertices.push(x, y, z);
-   }
-   const starGeometry = new THREE.BufferGeometry();
-   starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-   const starMaterial = new THREE.PointsMaterial({
-       color: 0x888888,
-       size: 0.1,
-       transparent: true,
-       opacity: 0.5
-   });
-   const stars = new THREE.Points(starGeometry, starMaterial);
-   scene.add(stars);
-
-
-   // 5. Интерактивность с мышью
-   let mouseX = 0;
-   let mouseY = 0;
-   document.addEventListener('mousemove', (event) => {
-       mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-       mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-   });
-
-   // 6. Анимация
-   const clock = new THREE.Clock();
-   function animate() {
-       requestAnimationFrame(animate);
-       const elapsedTime = clock.getElapsedTime();
-
-       // Очень медленное вращение сетки для создания атмосферы
-       gridHelper.rotation.y = elapsedTime * 0.03;
-
-       // Плавное смещение камеры вслед за мышью
-       camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-       camera.position.y += (-mouseY * 2 - camera.position.y) * 0.05;
-       camera.lookAt(scene.position);
-
-       renderer.render(scene, camera);
-   }
-   animate();
-
-   // 7. Адаптивность
-   window.addEventListener('resize', () => {
-       camera.aspect = container.clientWidth / container.clientHeight;
-       camera.updateProjectionMatrix();
-       renderer.setSize(container.clientWidth, container.clientHeight);
-   });
+    // Добавляем слушателя для корректного уничтожения эффекта при уходе со страницы.
+    // Это хорошая практика для предотвращения утечек памяти.
+    window.addEventListener('beforeunload', destroyVanta);
 });
